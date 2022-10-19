@@ -1,9 +1,9 @@
 function [w] = helper_L1(funObj,w,ind_diag,ind_nodiag,options_MPF )
 
 verbose = options_MPF.verbose;
-optTol = options_MPF.optTol;
-progTol = options_MPF.progTol;
-maxIter = options_MPF.maxIter;
+optTol = options_MPF.opt_tol;
+progTol = options_MPF.prog_tol;
+maxIter = options_MPF.max_iter;
 suffDec = options_MPF.suffDec;
 memory = options_MPF.memory;
 lambda_h = options_MPF.lambda_h;

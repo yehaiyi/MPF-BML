@@ -1,6 +1,11 @@
 close all
 clear all;
 
+addpath data\
+addpath function\
+addpath 'Helper Functions'\
+addpath '3rd Party Code'\
+
 % Inputs:
 % msa_aa: matrix of characters (aka amino acid MSA). Rows correspond to 
 %         sequences, and colums to observed states at a particular residue
@@ -42,10 +47,11 @@ clear all;
 % out if there is user-provided "msa_aa" and "weight_seq"
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test_example=1; % load the test example
+test_example=0; % load the test example
 if test_example==1
     fasta_name = 'hivgp160_processed_MSA.fasta';
-    load hivgp160_patient_weighting
+    load hivgp160_patient_weight.mat
+    weight_seq = weight_patient;
     [Header_fasta, Sequence_fasta] = fastaread(fasta_name);
     msa_aa = cell2mat(Sequence_fasta');
 
@@ -59,18 +65,35 @@ if test_example==1
     weight_seq = weight_seq(1:num_seq_test); % weight of each sequence
 end
 
+%% load 3a data
+load data\NumofPatient_3aE2.mat;
+inputfile = 'data/3a_E2_ori.fasta';
+[Header_fasta, Sequence_fasta] = fastaread(inputfile);
+msa_aa = cell2mat(Sequence_fasta');
+
+% preprocess 
+no_patient_idx = find(~patient);
+if length(no_patient_idx) >0
+    msa_aa(no_patient_idx) = []
+end
+
+%msa_aa(outliers,:) =[];
+%patient(outliers,:) = [];
+
+weight_seq = get_seq_weight(patient);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set default weight and remove 100% conserved sites
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% % Set default weight_seq if not specified by user
-% num_seq = size(msa_aa,1); % number of sequences
-% if ~exist('weight_seq')
-%     % set equal weighting if weighting vector not provided
-%     weight_seq = ones(num_seq,1);
-% end
+% Set default weight_seq if not specified by user
+num_seq = size(msa_aa,1); % number of sequences
+if ~exist('weight_seq')
+    % set equal weighting if weighting vector not provided
+    weight_seq = ones(num_seq,1);
+end
 
-% num_patients = sum(weight_seq); % number of patients
+num_patients = sum(weight_seq); % number of patients
 
 % Remove and find location of 100% conserved residues
 num_residue = size(msa_aa,2);
@@ -127,8 +150,11 @@ disp(['Intermediate step - Generating helper variables, Time: ' num2str(time_hel
 
 time_step2_MPF = tic();
 
-options_MPF.lambda_J = 0.01; % L1 regularization parameter
-options_MPF.gamma_J = 0.02; % L2 regularization parameter
+options_MPF.lambda_J = 30; % L1 regularization parameter # couplings
+options_MPF.gamma_J = 30; % L2 regularization parameter
+options_MPF.lambda_h = 0.00001; % L1 regularization parameter  # fields
+options_MPF.gamma_h = 0.00001; % L2 regularization parameter
+
 
 J_MPF = MPF_run(msa_bin_unique,weight_seq_unique,num_mutants_combine_array,phi_opt,options_MPF);
 
@@ -140,18 +166,18 @@ disp(['Step 2: MPF, Time: ' num2str(time_step2_MPF) ' seconds']);
 % Step 3: BML
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-time_step2_BML = tic();
+%time_step2_BML = tic();
 
-options_BML.no_iterations=50;
-options_BML.eps_max = 1.15;
+%options_BML.no_iterations=50;
+%options_BML.eps_max = 1.15;
 
-J_MPF_BML =BML_run(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,options_BML);
+%J_MPF_BML =BML_run(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,options_BML);
 
-time_step2_BML = toc(time_step2_BML);
+%time_step2_BML = toc(time_step2_BML);
 
-disp(['Step 3: BML, Time: ' num2str(time_step2_BML) ' seconds']);
+%disp(['Step 3: BML, Time: ' num2str(time_step2_BML) ' seconds']);
 
-num_residues_binary = size(msa_bin_unique,2);
+%num_residues_binary = size(msa_bin_unique,2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Verification of the landscape
@@ -161,4 +187,4 @@ num_residues_binary = size(msa_bin_unique,2);
 out = verify_param(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array);
 
 % verify MPF-BML parameters
-out = verify_param(J_MPF_BML,msa_bin_unique,weight_seq_unique,num_mutants_combine_array);
+%out = verify_param(J_MPF_BML,msa_bin_unique,weight_seq_unique,num_mutants_combine_array);
