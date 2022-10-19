@@ -19,7 +19,7 @@ Jstore = ((Jstore_mat + Jstore_mat')/2);
 Jstore = Jstore(:);
 
 %% Process Options
-if nargin < 5
+if nargin < 7
     options_Verify = [];
 end
 

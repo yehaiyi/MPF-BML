@@ -148,22 +148,27 @@ disp(['Intermediate step - Generating helper variables, Time: ' num2str(time_hel
 % Step 2: MPF
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-time_step2_MPF = tic();
-
-param_J=30;
-param_h=0.001
-
-options_MPF.lambda_J = param_J; % L1 regularization parameter # couplings
-options_MPF.gamma_J = param_J; % L2 regularization parameter
-options_MPF.lambda_h = param_h; % L1 regularization parameter  # fields
-options_MPF.gamma_h = param_h; % L2 regularization parameter
-
-
-J_MPF = MPF_run(msa_bin_unique,weight_seq_unique,num_mutants_combine_array,phi_opt,options_MPF);
-
-time_step2_MPF = toc(time_step2_MPF);
-
-disp(['Step 2: MPF, Time: ' num2str(time_step2_MPF) ' seconds']);
+%param_J=30;
+% param_h=00000001;
+%for param_h = [0.001,0.00001,000001,0000001,00000001]
+% for param_J=[20 27 30 36 60 80]
+% 
+%     time_step2_MPF = tic();
+% 
+%     options_MPF.lambda_J = param_J; % L1 regularization parameter # couplings
+%     options_MPF.gamma_J = param_J; % L2 regularization parameter
+%     options_MPF.lambda_h = param_h; % L1 regularization parameter  # fields
+%     options_MPF.gamma_h = param_h; % L2 regularization parameter
+%     
+%     
+%     J_MPF = MPF_run(msa_bin_unique,weight_seq_unique,num_mutants_combine_array,phi_opt,options_MPF);
+%     
+%     time_step2_MPF = toc(time_step2_MPF);
+%     
+%     disp(['Step 2: MPF, Time: ' num2str(time_step2_MPF) ' seconds']);
+% 
+%     out = verify_param(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,param_J,param_h);
+% end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Step 3: BML
@@ -183,11 +188,42 @@ disp(['Step 2: MPF, Time: ' num2str(time_step2_MPF) ' seconds']);
 %num_residues_binary = size(msa_bin_unique,2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Step 2+3: MPF+BML
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+param_J=29.5;
+%param_h=0.000001;
+for param_h = [0.455]
+%for param_J=[29.2 29.4 29.6 29.8 30]
+
+    time_step2_MPF = tic();
+
+    options_MPF.lambda_J = param_J; % L1 regularization parameter # couplings
+    options_MPF.gamma_J = param_J; % L2 regularization parameter
+    options_MPF.lambda_h = param_h; % L1 regularization parameter  # fields
+    options_MPF.gamma_h = param_h; % L2 regularization parameter
+    
+    
+    J_MPF = MPF_run(msa_bin_unique,weight_seq_unique,num_mutants_combine_array,phi_opt,options_MPF);
+
+    options_BML.no_iterations=50;
+    options_BML.eps_max = 1.15;
+
+    J_MPF_BML =BML_run(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,options_BML);
+
+    
+    time_step2_MPF = toc(time_step2_MPF);
+    
+    disp(['Step 2+3: MPF+BML, Time: ' num2str(time_step2_MPF) ' seconds']);
+
+    out = verify_param(J_MPF_BML,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,param_J,param_h);
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Verification of the landscape
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % verify MPF parameterse
-out = verify_param(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,param_J,param_h);
+%out = verify_param(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,param_J,param_h);
 
 % verify MPF-BML parameters
 %out = verify_param(J_MPF_BML,msa_bin_unique,weight_seq_unique,num_mutants_combine_array);
