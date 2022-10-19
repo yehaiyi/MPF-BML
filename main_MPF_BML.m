@@ -150,10 +150,13 @@ disp(['Intermediate step - Generating helper variables, Time: ' num2str(time_hel
 
 time_step2_MPF = tic();
 
-options_MPF.lambda_J = 30; % L1 regularization parameter # couplings
-options_MPF.gamma_J = 30; % L2 regularization parameter
-options_MPF.lambda_h = 0.001; % L1 regularization parameter  # fields
-options_MPF.gamma_h = 0.001; % L2 regularization parameter
+param_J=30;
+param_h=0.001
+
+options_MPF.lambda_J = param_J; % L1 regularization parameter # couplings
+options_MPF.gamma_J = param_J; % L2 regularization parameter
+options_MPF.lambda_h = param_h; % L1 regularization parameter  # fields
+options_MPF.gamma_h = param_h; % L2 regularization parameter
 
 
 J_MPF = MPF_run(msa_bin_unique,weight_seq_unique,num_mutants_combine_array,phi_opt,options_MPF);
@@ -184,7 +187,7 @@ disp(['Step 2: MPF, Time: ' num2str(time_step2_MPF) ' seconds']);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % verify MPF parameterse
-out = verify_param(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array);
+out = verify_param(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,param_J,param_h);
 
 % verify MPF-BML parameters
 %out = verify_param(J_MPF_BML,msa_bin_unique,weight_seq_unique,num_mutants_combine_array);
