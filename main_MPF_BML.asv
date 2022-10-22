@@ -77,8 +77,9 @@ if length(no_patient_idx) >0
     msa_aa(no_patient_idx) = []
 end
 
-%msa_aa(outliers,:) =[];
-%patient(outliers,:) = [];
+load data\outliers.mat
+msa_aa(outliers,:) =[];
+patient(outliers,:) = [];
 
 weight_seq = get_seq_weight(patient);
 
@@ -192,7 +193,7 @@ disp(['Intermediate step - Generating helper variables, Time: ' num2str(time_hel
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 param_J=29.5;
 %param_h=0.000001;
-for param_h = [0.]
+for param_h = [0.455]
 %for param_J=[29.2 29.4 29.6 29.8 30]
 
     time_step2_MPF = tic();

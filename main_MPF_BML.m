@@ -77,8 +77,9 @@ if length(no_patient_idx) >0
     msa_aa(no_patient_idx) = []
 end
 
-%msa_aa(outliers,:) =[];
-%patient(outliers,:) = [];
+load data\outliers.mat
+msa_aa(outliers,:) =[];
+patient(outliers,:) = [];
 
 weight_seq = get_seq_weight(patient);
 

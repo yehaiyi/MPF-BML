@@ -26,7 +26,7 @@ num_patients = sum(weight_seq_unique);
 
 [options_MPF.verbose,options_MPF.opt_tol,options_MPF.prog_tol,options_MPF.max_iter,options_MPF.suffDec,options_MPF.memory,options_MPF.lambda_h,options_MPF.lambda_J,options_MPF.gamma_h,options_MPF.gamma_J,max_iter_MPF] = ...
     myProcessOptions(options_MPF,'verbose',0,'opt_tol',1e-20,'prog_tol',1e-20,...
-    'max_iter',10000,'suffDec',1e-4,'memory',10,'lambda_h',0,'lambda_J',10/num_patients,'gamma_h',0,'gamma_J',10/num_patients,'max_iter_MPF',2);
+    'max_iter',10,'suffDec',1e-4,'memory',10,'lambda_h',0,'lambda_J',10/num_patients,'gamma_h',0,'gamma_J',10/num_patients,'max_iter_MPF',2);
 
 % Store location of ones in msa_bin_unique, and the sequences which are one
 % Hamming distance away. Used for faster computation of MPF algorithm
