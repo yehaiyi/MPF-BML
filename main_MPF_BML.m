@@ -191,23 +191,25 @@ disp(['Intermediate step - Generating helper variables, Time: ' num2str(time_hel
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Step 2+3: MPF+BML
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param_J=29.5;
+%param_J=15;
 %param_h=0.000001;
-for param_h = [0.455]
+for param_h = [0.0001]
 %for param_J=[29.2 29.4 29.6 29.8 30]
 
     time_step2_MPF = tic();
 
-    options_MPF.lambda_J = param_J; % L1 regularization parameter # couplings
-    options_MPF.gamma_J = param_J; % L2 regularization parameter
-    options_MPF.lambda_h = param_h; % L1 regularization parameter  # fields
-    options_MPF.gamma_h = param_h; % L2 regularization parameter
+    options_MPF.lambda_J = 5; % L1 regularization parameter # couplings
+    options_MPF.gamma_J = 0.001; % L2 regularization parameter
+    options_MPF.lambda_h = 20; % L1 regularization parameter  # fields
+    options_MPF.gamma_h = 20; % L2 regularization paramete
+    options_MPF.max_iter =8;
+    options_BML.no_iterations=10;
+
     
     
     J_MPF = MPF_run(msa_bin_unique,weight_seq_unique,num_mutants_combine_array,phi_opt,options_MPF);
 
-    options_BML.no_iterations=50;
-    options_BML.eps_max = 1.15;
+    options_BML.eps_max = 1.;
 
     J_MPF_BML =BML_run(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,options_BML);
 

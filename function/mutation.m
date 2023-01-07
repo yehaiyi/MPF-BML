@@ -2,11 +2,23 @@
 [  ~ , seq ] = fastaread('data/Yu2013.fasta');
 msa = cell2mat(seq)
 %% 
-[  ~ , seq ] = fastaread('data/preprocess/S52.JFH1_EU204645.fasta');
+[  ~ , seq ] = fastaread('data/preprocess/GT3a.D17763_384-752.fasta');
 
+res=583
+
+if res>479 && res<579
+    res=res+1;
+else if res>579
+    res=res+6;
+end
+end
+
+seq(res-383)
 %% 
-[  ~ , seq2 ] = fastaread('data/preprocess/S52.fasta');
-seq2(364)
+[  ~ , seq ] = fastaread('data/preprocess/GT3a.D17763_384-752.fasta');
+
+
+
 %%  比较在E2上突变的数量
 clear
 [  ~ , Urban ] = fastaread('data/Prentoe2019.fasta');
@@ -44,9 +56,9 @@ for res =[417 430 448 476 532 556 623 645 ]
 end 
 
 
-%% 
+%% Alignment
 
-[  ~ , seq ] = fastaread('data/preprocess/S52_compare.fasta');
+[  ~ , seq ] = fastaread('data/preprocess/GT3a.D17763_compare.fasta');
 Aseq = multialign(seq)
 %% 特定位点上的出现过的aa及频率计算（要算上patient_weight的）
 %这个也得是没剔除conserved res的msa_aa ( i.e. 使用msa_aa_369)
@@ -138,7 +150,7 @@ value_change = com_seq(idx_change)
 mut_bin_ind = find(com_seq== -1);
 
 %% 某个突变对应的Energy变化效果
-column_idx = 221
+column_idx = 546
 
 h_effect =J_MPF_BML(column_idx,column_idx)
 J=J_MPF_BML(:,column_idx);
@@ -152,7 +164,7 @@ h_conserved =H(column_idx)
 
 
 %% bin index所对应的res
-bin_idx = 524;
+bin_idx = 25
 sum_aa = 0;
 flag=0;
 res_idx_aft=1;
@@ -169,10 +181,37 @@ end
 
 res_idx_aft
 rank = sum_aa - bin_idx +2 
-res_idx_bf = ind_non_conserve(res_idx_aft) + 383 % S52的numbering
+amino_single_combine_array{res_idx_aft,1}
+%res_idx_bf = ind_non_conserve(res_idx_aft) + 383 % S52的numbering
+
+%% 将msa_aa中的gap替换成真实的aa（按概率抽样）
+
+s = RandStream('mrg32k3a');
 
 
+gap_col_idx = 1;
 
+aas = msa_aa(:,gap_col_idx);
+aa_unique = unique(aas);
+num_patient = sum(weight_seq);
+freq_list = zeros(length(aa_unique),1);
+for i =1: length(aa_unique)
+    aa = aa_unique(i);
+    if aa=='-'
+        freq_list(i)=0;
+    else
+        freq_list(i) =  sum(weight_seq .* (aas==aa) )  / num_patient;
+    end
+end
+
+freq_list = freq_list / sum(freq_list);
+alphabet = 1:length(aa_unique);
+prob = freq_list;
+out = randsrc(1,1,[alphabet;prob'],s);
+new_aa = aa_unique(out)
+%% 
+new_msa = GapSubstitution(msa_aa,weight_seq);
+save data\msa_without_gaps.mat new_msa
 
 
 

@@ -9,7 +9,7 @@ line_width = 0.5;
 Single_Mutation_Observed = sum(msa_bin.*weight_seq,1)/sum(weight_seq);  % f_i(a)
 H = -log((Single_Mutation_Observed)./(1-Single_Mutation_Observed));
 
-conserve=1;
+conserve=;
 
 %% 导入369的msa_aa
 load data\NumofPatient_3aE2.mat;
