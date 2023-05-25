@@ -1,5 +1,5 @@
 
-clear all;
+clear;
 
 addpath data\
 addpath function\
@@ -192,35 +192,38 @@ disp(['Intermediate step - Generating helper variables, Time: ' num2str(time_hel
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Step 2+3: MPF+BML
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-param_J=10;
+%param_J=10;
 %param_h=[ 0.1 0.01 0.001 0.003 0.006 0.0001];
-for param_h = [10];
+
 %for param_J=[14]
 
-    time_step2_MPF = tic();
+time_step2_MPF = tic();
 
-    options_MPF.lambda_J = 5; % L1 regularization parameter # couplings
-    options_MPF.gamma_J = 0.001; % L2 regularization parameter
-    options_MPF.lambda_h = 20; % L1 regularization parameter  # fields
-    options_MPF.gamma_h = 20; % L2 regularization parameter
-    options_MPF.max_iter = 8;
+options_MPF.lambda_J = 5; % L1 regularization parameter # couplings
+options_MPF.gamma_J = 0.001; % L2 regularization parameter
+options_MPF.lambda_h = 20; % L1 regularization parameter  # fields
+options_MPF.gamma_h = 20; % L2 regularization parameter
+options_MPF.max_iter = 8;
     
-    J_MPF = MPF_run(msa_bin_unique,weight_seq_unique,num_mutants_combine_array,phi_opt,options_MPF);
+J_MPF = MPF_run(msa_bin_unique,weight_seq_unique,num_mutants_combine_array,phi_opt,options_MPF);
 
-    options_BML.no_iterations=10;
-    options_BML.eps_max = 1;
+options_BML.no_iterations=10;
+options_BML.eps_max = 1;
 
-    J_MPF_BML =BML_run(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,options_BML);
+J_MPF_BML =BML_run(J_MPF,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,options_BML);
 
     
-    time_step2_MPF = toc(time_step2_MPF);
+time_step2_MPF = toc(time_step2_MPF);
     
-    disp(['Step 2+3: MPF+BML, Time: ' num2str(time_step2_MPF) ' seconds']);
+disp(['Step 2+3: MPF+BML, Time: ' num2str(time_step2_MPF) ' seconds']);
 
-    out = verify_param(J_MPF_BML,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,param_J,param_h);
-    Test(msa_bin,weight_seq,amino_single_combine_array,ind_conserve,J_MPF_BML,0)
-    Test(msa_bin,weight_seq,amino_single_combine_array,ind_conserve,J_MPF_BML,1)
- end
+out = verify_param(J_MPF_BML,msa_bin_unique,weight_seq_unique,num_mutants_combine_array);
+%Test(msa_bin,weight_seq,amino_single_combine_array,ind_conserve,J_MPF_BML,0)
+%Test(msa_bin,weight_seq,amino_single_combine_array,ind_conserve,J_MPF_BML,1)
+%%
+Biological_validation_3a(msa_bin,weight_seq,amino_single_combine_array,ind_conserve,J_MPF_BML,0)
+Biological_validation_3a(msa_bin,weight_seq,amino_single_combine_array,ind_conserve,J_MPF_BML,1)
+ 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Verification of the landscape

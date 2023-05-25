@@ -1,4 +1,4 @@
-function out = verify_param(Jstore_mat,msa_bin_unique,weight_seq_unique,num_mutants_combine_array,param_J,param_h)
+function out = verify_param(Jstore_mat,msa_bin_unique,weight_seq_unique,num_mutants_combine_array)
 % verify_param(Jstore,msa_bin_unique,weight_seq_unique,num_mutants_combine_array)
 % 
 % Verify the couplings
@@ -111,7 +111,7 @@ plot(single_MSA,single_MCMC,'rx');hold;grid off;
 plot(arrayline,arrayline,'b')
 xlabel('Single mutant probability (MSA)')
 ylabel('Single mutant probability (MCMC)')
-title(['Average epsilon=' num2str(single_error),',J=' num2str(param_J), ',h=' num2str(param_h)])
+title(['Average epsilon=' num2str(single_error)])
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot 2: Double mutant probabilities
@@ -152,7 +152,7 @@ plot(double_MSA_flat,double_MCMC_flat,'rx');hold;grid off;
 plot(arrayline,arrayline,'b')
 xlabel('Double mutant probability (MSA)')
 ylabel('Double mutant probability (MCMC)')
-title(['Average epsilon=' num2str(double_error),',J=' num2str(param_J), ',h=' num2str(param_h)])
+title(['Average epsilon=' num2str(double_error)])
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -177,7 +177,7 @@ plot(connected_MSA_flat,connected_MCMC_flat,'rx');hold;grid off;
 plot(arrayline,arrayline,'b')
 xlabel('Connected correlation (MSA)')
 ylabel('Connected correlation (MCMC)')
-title(['Average epsilon=' num2str(covar_error),',J=' num2str(param_J), ',h=' num2str(param_h)])
+title(['Average epsilon=' num2str(covar_error)])
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot 4: Probability of number of mutations
@@ -196,7 +196,7 @@ semilogy(1:max_mutant,pdf_MCMC,'bs-')
 legend('MSA','MCMC','Location','Best')
 xlabel('Number of mutants, x')
 ylabel('Frequency of x')
-title(['J=' num2str(param_J), ',h=' num2str(param_h)])
+%title(['J=' num2str(param_J), ',h=' num2str(param_h)])
 
 
 out=1;
