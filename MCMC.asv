@@ -7,10 +7,10 @@ H = -log((Single_Mutation_Observed)./(1-Single_Mutation_Observed));
 %% Metropolis MC sampling
 tic;
 samples=[];
-N=1e8;
+N=5000;
 Burn_in=1e4;
 Thin_in=1e3;
-USE_H=0;
+USE_H=1;
 
 num_mutants_combine_array_acc = cumsum(num_mutants_combine_array);
 
@@ -541,9 +541,9 @@ FIG.Name = 'Ours';
 
 FIG.Units = 'centimeters';
 % set(gcf,'Position',[10 10 7.84 6]);
-% set(gca,'Position',[.15 .2 .8 .74]);  %µ÷Õû XLABLEºÍYLABLE²»»á±»ÇĞµô
+% set(gca,'Position',[.15 .2 .8 .74]);  %è°ƒæ•´ XLABLEå’ŒYLABLEä¸ä¼šè¢«åˆ‡æ‰
 set(gcf,'Position',[10 10 7.84 6]);
-set(gca,'Position',[.15 .2 .8 .74]);  %µ÷Õû XLABLEºÍYLABLE²»»á±»ÇĞµô
+set(gca,'Position',[.15 .2 .8 .74]);  %è°ƒæ•´ XLABLEå’ŒYLABLEä¸ä¼šè¢«åˆ‡æ‰
 figure_FontSize=8;
 set(get(gca,'XLabel'),'FontSize',figure_FontSize,'Vertical','top');
 % set(gca,'TickDir','out')
@@ -601,7 +601,7 @@ FIG.Name = 'DCA';
 
 FIG.Units = 'centimeters';
 set(gcf,'Position',[10 10 10.45 7.84]);
-set(gca,'Position',[.15 .2 .8 .74]);  %µ÷Õû XLABLEºÍYLABLE²»»á±»ÇĞµô
+set(gca,'Position',[.15 .2 .8 .74]);  %è°ƒæ•´ XLABLEå’ŒYLABLEä¸ä¼šè¢«åˆ‡æ‰
 figure_FontSize=8;
 set(get(gca,'XLabel'),'FontSize',figure_FontSize,'Vertical','top');
 % set(gca,'TickDir','out')
@@ -655,7 +655,7 @@ FIG.Name = 'DCA';
 
 FIG.Units = 'centimeters';
 set(gcf,'Position',[10 10 10.45 7.84]);
-set(gca,'Position',[.15 .2 .8 .74]);  %µ÷Õû XLABLEºÍYLABLE²»»á±»ÇĞµô
+set(gca,'Position',[.15 .2 .8 .74]);  %è°ƒæ•´ XLABLEå’ŒYLABLEä¸ä¼šè¢«åˆ‡æ‰
 figure_FontSize=8;
 set(get(gca,'XLabel'),'FontSize',figure_FontSize,'Vertical','top');
 % set(gca,'TickDir','out')
