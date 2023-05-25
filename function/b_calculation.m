@@ -1,4 +1,4 @@
-load('results/workspace/14_10_1208.mat')
+load('results/workspace/test_1226.mat')
 
 Single_Mutation_Observed = sum(msa_bin.*weight_seq,1)/sum(weight_seq);  % f_i(a)
 H = -log((Single_Mutation_Observed)./(1-Single_Mutation_Observed));
@@ -73,7 +73,9 @@ text(-2.5 ,-0.25,sprintf('$$r= %.4f $$', P(1)), 'Interpreter','latex', 'FontSize
 P(1)
 xlabel('Energy (relatived)')
 ylabel('Experimental fitness (relatived)')
+%legend('Esteban-Riesco2013-1,Esteban-Riesco2013-2,Esteban-Riesco2013-3,Prentoe2019')
 title('calculation of b')
+hold off
 
 
 

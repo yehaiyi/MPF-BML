@@ -117,6 +117,7 @@ elseif length(ind_conserve) > 1
     disp(['There are ' num2str(length(ind_conserve)) ' 100% conserved residues detected and removed, resulting in ' ...
         num2str(length(ind_non_conserve)) ' number of residues. The location of residues are in the variable ind_conserve']);
 end
+%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Step 1: Mutant combining
@@ -200,9 +201,9 @@ for param_h = [10];
 
     options_MPF.lambda_J = 5; % L1 regularization parameter # couplings
     options_MPF.gamma_J = 0.001; % L2 regularization parameter
-    options_MPF.lambda_h = 50; % L1 regularization parameter  # fields
-    options_MPF.gamma_h = 50; % L2 regularization parameter
-    options_MPF.max_iter = 10;
+    options_MPF.lambda_h = 20; % L1 regularization parameter  # fields
+    options_MPF.gamma_h = 20; % L2 regularization parameter
+    options_MPF.max_iter = 8;
     
     J_MPF = MPF_run(msa_bin_unique,weight_seq_unique,num_mutants_combine_array,phi_opt,options_MPF);
 

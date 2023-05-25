@@ -62,7 +62,24 @@ end
 Aseq = multialign(seq)
 %% 特定位点上的出现过的aa及频率计算（要算上patient_weight的）
 %这个也得是没剔除conserved res的msa_aa ( i.e. 使用msa_aa_369)
-res=496
+% 导入369的msa_aa
+load data\NumofPatient_3aE2.mat;
+inputfile = 'data/3a_E2_ori.fasta';
+[Header_fasta, Sequence_fasta] = fastaread(inputfile);
+msa_aa_369 = cell2mat(Sequence_fasta');
+
+% preprocess 
+no_patient_idx = find(~patient);
+if length(no_patient_idx) >0
+    msa_aa_369(no_patient_idx) = []
+end
+
+load data\outliers.mat
+load data\weight_seq.mat
+msa_aa_369(outliers,:) =[];
+patient(outliers,:) = [];
+%
+res=408
 
 if res>479 && res<579
     res=res+1;
@@ -83,7 +100,7 @@ end
 table(aa_unique,freq_list)
 %sortrows(table,'freq_list', 'descend')
 
-index_after = find(ind_non_conserve== res-383);
+index_after = find(ind_non_conserve== res-383)
 c=amino_single_combine_array(index_after);
 c{1,1}
 
@@ -212,6 +229,42 @@ new_aa = aa_unique(out)
 %% 
 new_msa = GapSubstitution(msa_aa,weight_seq);
 save data\msa_without_gaps.mat new_msa
+%% 
+ind_conserve_H77 = [];
+
+for index_before =  ind_conserve +383
+
+    if index_before>480 && index_before<580
+        index_before = index_before - 1;
+    else if index_before > 585
+            index_before =index_before -6;
+    end
+    end
+    ind_conserve_H77 = [ind_conserve_H77 index_before];
+
+end
+
+%% 4mwf 的index转换
+real_index =[];
+
+for index = location_index
+
+    if index>=1 && index <= 48
+        index = index + 411;
+        real_index =[real_index index];
+
+    elseif index >=49 && index <= 212
+        index = index + 433;
+        real_index =[real_index index];
+    end
+end
+
+
+        
+        
+
+
+
 
 
 

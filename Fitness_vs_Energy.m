@@ -1,4 +1,4 @@
-load('results/workspace/1215.mat')
+load('results/workspace/test_1226.mat')
 load data\weight_seq.mat
 %run startup.m
 %%
