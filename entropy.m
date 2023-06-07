@@ -59,10 +59,20 @@ p = polyfit(1./[chunk:chunk:N]',S,2);
 entropy_true = [entropy_true ;p(3)];
 end
 
+%% load inferred 1a E2 model and MCMC samples
+load('results\Model_1a.mat','J_MPF_BML')
+load('results\MCMC\MCMC_samples_1a_9990.mat', 'samples')
+
+%%  load inferred 1b E2 model and MCMC samples
+load('results\Model_1b.mat','J_MPF_BML')
+load('results\MCMC\MCMC_samples_1b_9990.mat', 'samples')
+
+%%  load inferred 3a E2 model and MCMC samples
+load('results/workspace/test_1226.mat','J_MPF_BML')
+load('results\MCMC\MCMC_samples_3a_9990.mat', 'samples')
 %% entropy计算
-load('E1E2_1a.mat', 'J_MPF_BML')
-load('samples_E1E2.mat', 'samples')
-[samples_unique ind1 ind2]= unique(samples,'rows');
+
+[samples_unique, ind1, ind2]= unique(samples,'rows');
 
 
 weight_seq = ones(1,size(samples,1))/size(samples,1);
@@ -70,7 +80,7 @@ weight_seq_unique=[];
 for indi_bin = 1:length(ind1)
     num_term = ind2(ind1(indi_bin));
     ind_values = find(ind2==num_term);
-    weight_seq_unique(indi_bin) = sum(weight_seq(ind_values));
+    weight_seq_unique(indi_bin) = sum(weight_seq(ind_values)); %为了得到每个unique sequence占的weight吧
 end
 
 Z=0;
@@ -82,6 +92,7 @@ for i =1:size(samples_unique,1)
 end
 
 entropy_maxent = E+log(Z);
+entropy_maxent
 %%
 E1E2=(entropy_ind - entropy_maxent)/(entropy_ind - max(entropy_true));
 I_E1E2 = entropy_ind - max(entropy_true);

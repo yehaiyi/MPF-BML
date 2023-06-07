@@ -1,16 +1,21 @@
-%% load inferred 3a E2 model and 
-load('results/workspace/test_1226.mat')
-load data\weight_seq.mat
+%% load 1a model
+load('results\Model_1a.mat')
 
-Single_Mutation_Observed = sum(msa_bin.*weight_seq,1)/sum(weight_seq);  % f_i(a)
-H = -log((Single_Mutation_Observed)./(1-Single_Mutation_Observed));
+%% load 1b model
+load('results\Model_1b.mat')
+
+%% load inferred 3a E2 model 
+load('results/workspace/test_1226.mat')
+
 %% Metropolis MC sampling
+rng(0)
 tic;
 samples=[];
-N=5000;
-Burn_in=1e4;
-Thin_in=1e3;
-USE_H=1;
+samples_energy=[];
+N=1000; %1e7
+Burn_in=0; %1e4
+Thin_in=1; %1e3
+USE_H=0;
 
 num_mutants_combine_array_acc = cumsum(num_mutants_combine_array);
 
@@ -19,26 +24,26 @@ num_mutants_combine_array_acc_all = [0 num_mutants_combine_array_acc];
 
 positions = size(num_mutants_combine_array,2);    
 
-
+msa_bin_unique = unique(msa_bin,'row');
 randvalue = randi([1 size(msa_bin_unique,1)]);
-x = msa_bin_unique(randvalue,:);
+x = msa_bin_unique(randvalue,:);      % randomly pick a sequence from unique MSA sequence
 n=0;
 
 if(USE_H)
     energy = x*H';
 else
-    energy = x*J_MPF_BML*x';
+    energy = x*J_MPF_BML*x';   % engery of initial sequence 
 end
 
 while n<N
     xnew =x;
     energy_new = energy;
     pos = randi(positions);
-    index = randi([0,num_mutants_combine_array(1,pos)]);
+    index = randi([0,num_mutants_combine_array(1,pos)]);  % index=0 i.e. consensus aa
     Start_site = num_mutants_combine_array_acc_all(pos)+1;
     End_site = num_mutants_combine_array_acc_all(pos+1);
-    one = find(xnew(Start_site:End_site)>0);
-    if(~isempty(one) && ~logical(USE_H))
+    one = find(xnew(Start_site:End_site)>0);     % 目前seq x 在pos上mutant所在的位置
+    if(~isempty(one) && ~logical(USE_H)) % 如果x在pos上不是consensus aa
         energy_new = energy_new-2*xnew*J_MPF_BML(:,Start_site+one-1)+J_MPF_BML(Start_site+one-1,Start_site+one-1);
     end
     if(index==0) 
@@ -54,7 +59,6 @@ while n<N
             energy_new = energy_new-xnew(Start_site:End_site)*H(Start_site:End_site)';
         end
         xnew(Start_site:End_site)=0;
-        
         xnew(Start_site+index-1)=1;
          if(USE_H)
             energy_new = energy_new+xnew(Start_site+index-1)*H(Start_site+index-1)';
@@ -63,23 +67,95 @@ while n<N
          end
     end
     
-%     trans_rate = exp(energy-energy_new);
-    trans_rate = 1/(1+exp((-energy+energy_new)));
-    if(n>Burn_in)
-        if(mod((n+1),Thin_in)==0)
-            samples=[samples;x];
-        end
-    end
+    trans_rate = exp(energy-energy_new);
+    %trans_rate = 1/(1+exp((-energy+energy_new)));
  
-    
-    if rand < trans_rate
+    if energy_new<=energy
+        x=xnew;
+        energy=energy_new;
+    elseif rand < trans_rate
         x=xnew;
         energy=energy_new;
     end
-    
-    
 
-    
+    % sample
+    if(n+1>Burn_in)
+        if(mod((n+1),Thin_in)==0)
+            samples=[samples;x];
+            samples_energy = [samples_energy; energy];
+        end
+    end
+
+    n=n+1;
+%     if rand < 1/(1+exp(xnew*triu(J_MPF_BML)*xnew'-x*triu(J_MPF_BML)*x'))
+
+end
+toc;
+%% MCMC Metroplis_ revised by Haiyi
+rng(0)
+tic;
+samples=[];
+samples_energy_haiyi=[];
+N=1e7;
+Burn_in=1e4;
+Thin_in=1e3;
+USE_H=0;
+% conserved-only model
+Single_Mutation_Observed = sum(msa_bin.*weight_seq,1)/sum(weight_seq);  % f_i(a)
+H = -log((Single_Mutation_Observed)./(1-Single_Mutation_Observed));
+
+num_mutants_combine_array_acc = cumsum(num_mutants_combine_array);
+num_mutants_combine_array_acc_all = [0 num_mutants_combine_array_acc];
+
+positions = size(num_mutants_combine_array,2);    
+
+msa_bin_unique = unique(msa_bin,'row');
+randvalue = randi([1 size(msa_bin_unique,1)]);
+x = msa_bin_unique(randvalue,:);      % randomly pick a sequence from unique MSA sequence
+n=0;
+
+if(USE_H)
+    energy = Calculate_Energy(x, J_MPF_BML,H);
+else 
+    energy = Calculate_Energy(x, J_MPF_BML);
+end
+
+while n<N
+    xnew =x;
+    pos = randi(positions);
+    index = randi([0,num_mutants_combine_array(1,pos)]);  % new mutant index=0 i.e. consensus aa
+    Start_site = num_mutants_combine_array_acc_all(pos)+1;
+    End_site = num_mutants_combine_array_acc_all(pos+1);
+    xnew(Start_site:End_site)=0;           
+    if index~=0
+        xnew(Start_site+index-1)=1;
+    end
+
+    if(USE_H)
+    energy_new = Calculate_Energy(xnew, J_MPF_BML,H);
+    else 
+    energy_new = Calculate_Energy(xnew, J_MPF_BML);
+    end
+   
+    trans_rate = exp(energy-energy_new);
+    %trans_rate = 1/(1+exp((-energy+energy_new)));
+ 
+    if energy_new<=energy
+        x=xnew;
+        energy=energy_new;
+    elseif rand < trans_rate
+        x=xnew;
+        energy=energy_new;
+    end
+
+    % sample
+    if(n>Burn_in)
+        if(mod((n+1),Thin_in)==0)
+            samples=[samples;x];
+            samples_energy_haiyi = [samples_energy_haiyi; energy];
+        end
+    end
+
     n=n+1;
 %     if rand < 1/(1+exp(xnew*triu(J_MPF_BML)*xnew'-x*triu(J_MPF_BML)*x'))
 
